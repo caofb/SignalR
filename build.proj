@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" 
+  InitialTargets="Header"
+  DefaultTargets="Build">
+
+  <PropertyGroup>
+    <PROJECT>SignalR</PROJECT>
+    <VERSION>2.1.0</VERSION>
+    <FINAL_MILESTONE>True</FINAL_MILESTONE>
+
+    <LICENSE_URL>https://raw.github.com/SignalR/SignalR/master/LICENSE.md</LICENSE_URL>
+    <PROJECT_URL>http://www.asp.net/signalr</PROJECT_URL>
+    <COPYRIGHT>Copyright (c) Microsoft Open Technologies, Inc.  All rights reserved.</COPYRIGHT>
+    <TAGS>Microsoft AspNet SignalR AspNetSignalR</TAGS>
+    <!--<NUGET_PROPERTIES>authors=Microsoft;licenseUrl=https://raw.github.com/SignalR/SignalR/master/LICENSE.md;projectUrl=https://raw.github.com/SignalR/SignalR/master/LICENSE.md;copyright=Copyright (c) Microsoft Open Technologies, Inc.  All rights reserved.;tags=Microsoft AspNet SignalR AspNetSignalR</NUGET_PROPERTIES>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <NUGET_PROPERTIES Include="authors">
+        <Value>Microsoft</Value>
+    </NUGET_PROPERTIES>
+    <NUGET_PROPERTIES Include="licenseUrl;clientLicenseUrl">
+        <Value>https://raw.github.com/SignalR/SignalR/master/LICENSE.md</Value>
+    </NUGET_PROPERTIES>
+    <NUGET_PROPERTIES Include="projectUrl">
+        <Value>http://www.asp.net/signalr</Value>
+    </NUGET_PROPERTIES>
+    <NUGET_PROPERTIES Include="copyright">
+        <Value>Copyright (c) Microsoft Open Technologies, Inc.  All rights reserved.</Value>
+    </NUGET_PROPERTIES>
+    <NUGET_PROPERTIES Include="tags">
+        <Value>Microsoft AspNet SignalR AspNetSignalR</Value>
+    </NUGET_PROPERTIES>
+
+    <COMPILE_PROJECTS 
+      Include="$(BASE_DIR)src\**\*.csproj" 
+      Exclude="$(BASE_DIR)src\**\*.Android.csproj;$(BASE_DIR)src\**\*.iOS.csproj;">
+      <DestinationFolder>$(COMPILE_DIR)%(Filename)</DestinationFolder>
+    </COMPILE_PROJECTS>
+
+    <TEST_PROJECTS 
+      Include="$(BASE_DIR)tests\**\*.csproj"
+      Exclude="$(BASE_DIR)tests\**\*.CoreClr.csproj">
+      <DestinationFolder>$(TEST_DIR)%(Filename)</DestinationFolder>
+    </TEST_PROJECTS>
+  </ItemGroup>
+
+  <Import Project="$(BUILD_SYSTEM_PATH)\build.targets" /> 
+  
+  <Target Name="PreparePackage:VersionJS" BeforeTargets="PreparePackage">
+    <Move SourceFiles="$(COMPILE_DIR)Microsoft.AspNet.SignalR.Client.JS\jquery.signalR.js;
+                       $(COMPILE_DIR)Microsoft.AspNet.SignalR.Client.JS\jquery.signalR.min.js"
+          DestinationFiles="$(COMPILE_DIR)Microsoft.AspNet.SignalR.Client.JS\jquery.signalR-$(VERSION).js;
+                            $(COMPILE_DIR)Microsoft.AspNet.SignalR.Client.JS\jquery.signalR-$(VERSION).min.js" />
+  </Target>
+  
+  <Target Name="PreparePackage:FindNuspecs" BeforeTargets="PreparePackage">
+    <ItemGroup>
+      <PackageNugetFile Include="$(COMPILE_DIR)**\*.JS.nuspec">
+        <Symbols>false</Symbols>
+      </PackageNugetFile>
+      
+      <PackageNugetFile Include="$(COMPILE_DIR)**\*.nuspec" Exclude="@(PackageNugetFile)" />
+    </ItemGroup>
+      
+    <Message Text="1: @(PackageNugetFile)" />
+  </Target>
+
+</Project>
